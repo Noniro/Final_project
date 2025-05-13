@@ -1,0 +1,4 @@
+pandas
+scikit-learn
+numpy
+# We'll add torch and transformers later when needed to keep this phase simple
