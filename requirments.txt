@@ -1,4 +1,7 @@
 pandas
 scikit-learn
 numpy
-# We'll add torch and transformers later when needed to keep this phase simple
+torch
+transformers
+sentence-transformers # Useful for cosine similarity and sentence embeddings
+# nltk # If you plan to use NLTK for BLEU later
