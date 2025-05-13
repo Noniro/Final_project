@@ -169,15 +169,15 @@ if __name__ == "__main__":
 
     if sms_df_raw is not None:
         sms_df_processed = preprocess_dataframe_sms_spam(sms_df_raw.copy())
-        if sms_df_processed is not None:
-            train_data, test_data = split_and_save_data(
-                sms_df_processed,
-                test_size=TEST_SET_SIZE,
-                random_state=RANDOM_SEED,
-                processed_dir=PROCESSED_DATA_DIR,
-                train_filename=TRAIN_FILE_PROCESSED,
-                test_filename=TEST_FILE_PROCESSED
-            )
+        # if sms_df_processed is not None:
+        #     train_data, test_data = split_and_save_data(
+        #         sms_df_processed,
+        #         test_size=TEST_SET_SIZE,
+        #         random_state=RANDOM_SEED,
+        #         processed_dir=PROCESSED_DATA_DIR,
+        #         train_filename=TRAIN_FILE_PROCESSED,
+        #         test_filename=TEST_FILE_PROCESSED
+        #     )
             # if train_data is not None:
             #     print("\nSample of processed SMS Spam training data:")
             #     print(train_data.head())
@@ -199,7 +199,7 @@ if __name__ == "__main__":
 
             # Split and save the combined dataset (same filenames as before)
             split_and_save_data(
-                df=combined_df.rename(columns={'label_numeric': 'label', 'message_cleaned': 'message'}),
+                df=combined_df,
                 test_size=TEST_SET_SIZE,
                 random_state=RANDOM_SEED,
                 processed_dir=PROCESSED_DATA_DIR,
