@@ -452,7 +452,7 @@ def main():
     parser.add_argument("--no_early_stop", action="store_true")
 
     parser.add_argument("--backbone", type=str, default=str(_repo_root() / "models" / "deberta_v3-base"))
-    parser.add_argument("--train_base", type=str, default=str(_processed_dir() / "train_spam_merged_dedup.csv"))
+    parser.add_argument("--train_base", type=str, default=str(_processed_dir() / "train_sms_dedup.csv"))
     parser.add_argument("--train_aug", type=str, default=str(_processed_dir() / "train_sms_mistral_augmented.csv"))
 
     parser.add_argument("--reset_summary", action="store_true")

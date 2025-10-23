@@ -25,7 +25,7 @@ from ood_utils import (
 # ---------------- Paths & constants ----------------
 PROCESSED_DATA_DIR = "../../data/processed/"
 DEFAULT_TRAIN_AUG_FILE = "train_spam_merged_dedup.csv"
-DEFAULT_TRAIN_BASE_FILE = "train_spam_merged_dedup.csv"
+DEFAULT_TRAIN_BASE_FILE = "train_sms_dedup.csv"
 DEFAULT_TEST_FILE = "test_sms_dedup.csv"
 
 HARD_MINING_BOTTOM_PCT = 0.20
@@ -232,7 +232,7 @@ def main():
     parser.add_argument(
         "--target_recall_spam",
         type=float,
-        default=0.92,
+        default=0.95,
         help="Pick thresholds that achieve at least this recall on spam (validation).",
     )
     parser.add_argument(
@@ -255,13 +255,38 @@ def main():
     print("  train_base:", base_train_path)
     print("  test      :", test_path)
 
-    df_train_val = load_csv(train_aug_path)
+    # Load all data sources
+    df_train_aug = load_csv(train_aug_path)
+    df_train_base = load_csv(base_train_path)
     df_test = load_csv(test_path)
-    train_df, val_df = train_test_split(
-        df_train_val, test_size=0.1, random_state=42, stratify=df_train_val["label"]
-    )
 
-    # Class weights
+    # 1. Create the validation set by taking a 15% slice from the ORIGINAL BASE data.
+    #    This set is now "quarantined".
+    train_base_remaining, val_df = train_test_split(
+        df_train_base,
+        test_size=0.15,
+        random_state=42,
+        stratify=df_train_base["label"]
+    )
+    print(f"Quarantined {len(val_df)} messages for the realistic validation set.")
+
+    # 2. Create a "fingerprint" of the validation set to prevent any leakage.
+    validation_messages_set = set(val_df['message'])
+
+    # 3. Clean all potential training data sources by removing any validation messages.
+    #    This is the crucial step to prevent data leakage.
+    train_base_clean = train_base_remaining[~train_base_remaining['message'].isin(validation_messages_set)]
+
+    # Important: Also clean the augmented file in case it was accidentally created from the full base file.
+    train_aug_clean = df_train_aug[~df_train_aug['message'].isin(validation_messages_set)]
+
+    # 4. Assemble the final, clean training dataset.
+    train_df = pd.concat([train_base_clean, train_aug_clean], ignore_index=True)
+    train_df = train_df.drop_duplicates(subset=["message"]).reset_index(drop=True)
+
+    print(f"Final combined training set size after cleaning: {len(train_df)} rows")
+
+    # Class weights (calculated on the new, combined training set)
     class_weights = compute_class_weight(
         class_weight="balanced", classes=np.unique(train_df["label"]), y=train_df["label"]
     )
