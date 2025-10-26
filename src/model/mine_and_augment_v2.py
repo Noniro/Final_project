@@ -140,7 +140,7 @@ def run_discriminator(
     # else: no stdout regex parsing here because we didn't capture output
 
     # -------------- gather mined outputs --------------
-    TARGET_POOL_SIZE = 300  # Your desired hard cap
+    TARGET_POOL_SIZE = 100  # Your desired hard cap
 
     # Define paths to the candidate files
     fn_file = _processed_dir() / "hard_spam_false_negatives.csv"

@@ -423,8 +423,8 @@ def main():
         max_new_tokens=args.max_new_tokens,
     )
 
-    df_out = pd.DataFrame({"message": messages, "label": [1] * len(messages)})
-    df_out.to_csv(args.output, index=False)
+    data_to_save = [{'message': msg, 'label': 1} for msg in messages]
+    df_out = pd.DataFrame(data_to_save)
     print(f"✅ Generated {len(messages)} messages in {args.mode} mode → saved to {args.output}")
 
 if __name__ == "__main__":
